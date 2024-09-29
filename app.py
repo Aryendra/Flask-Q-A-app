@@ -201,10 +201,24 @@ def promote(user_id):
 
     if user['admin'] == 0:
         return redirect(url_for('index'))
-
+    
     db = get_db()
-    db.execute('update users set expert = 1 where id = ?', [user_id])
-    db.commit()
+    curr=db.execute('select expert from users where id=?',[user_id])
+    res=curr.fetchone()
+
+    
+
+    if res['expert']==1:
+
+    
+        db.execute('update users set expert = 0 where id = ?', [user_id])
+        db.commit()
+    else:
+        db.execute('update users set expert = 1 where id = ?', [user_id])
+        
+        db.commit()
+
+    
 
     return redirect(url_for('users'))
 
@@ -212,6 +226,26 @@ def promote(user_id):
 def logout():
     session.pop('user', None)
     return redirect(url_for('index'))
+
+
+
+
+
+
+
+
+
+@app.route('/toggle')
+def toggle():
+    global active_state
+    active_state = not active_state  # Toggle the state
+    return redirect(url_for('index'))
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
